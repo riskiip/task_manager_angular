@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { TaskService } from 'src/app/task.service';
 import { ActivatedRoute, Params } from '@angular/router';
+import { Task } from 'src/app/models/task.model';
+import { List } from 'src/app/models/list.model';
 
 @Component({
   selector: 'app-task-view',
@@ -9,27 +11,29 @@ import { ActivatedRoute, Params } from '@angular/router';
 })
 export class TaskViewComponent implements OnInit {
 
-  lists: any[];
-  tasks: any[];
+  lists: List[];
+  tasks: Task[];
 
   constructor(private taskService: TaskService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.route.params.subscribe( (params: Params) => {
       console.log(params);
-      this.taskService.getTasks(params.listId).subscribe((task: any[]) => {
+      this.taskService.getTasks(params.listId).subscribe((task: Task[]) => {
         this.tasks = task;
       });
     });
 
-    this.taskService.getLists().subscribe((lists: any[]) => {
+    this.taskService.getLists().subscribe((lists: List[]) => {
       this.lists = lists;
     });
   }
 
-  createNewList() {
-    return this.taskService.createList('Tessst').subscribe((response: any) => {
-      console.log(response);
+  onTaskClicked(task: Task) {
+    // TODO: We want to make the task is completed when we click this button
+    this.taskService.complete(task).subscribe( () => {
+      console.log('Update task success');
+      task.completed = !task.completed;
     });
   }
 
